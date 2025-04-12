@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dysautonomia Monitoring System</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Auth Pages -->
+        <div id="auth-container" class="page-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <img src="assets/logo.png" alt="Dysautonomia Monitoring System Logo" class="logo">
+                    <h1>Dysautonomia Monitoring System</h1>
+                </div>
+                
+                <div class="tab-container">
+                    <div class="tabs">
+                        <button class="tab active" id="login-tab">Login</button>
+                        <button class="tab" id="signup-tab">Signup</button>
+                    </div>
+                    
+                    <div id="login-form" class="form-container">
+                        <div class="form-group">
+                            <label for="login-username">Username</label>
+                            <input type="text" id="login-username" placeholder="Enter your username">
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Password</label>
+                            <input type="password" id="login-password" placeholder="Enter your password">
+                        </div>
+                        <button id="login-btn" class="btn btn-primary">Login</button>
+                    </div>
+                    
+                    <div id="signup-form" class="form-container hidden">
+                        <div class="form-group">
+                            <label for="signup-username">Username</label>
+                            <input type="text" id="signup-username" placeholder="Choose a username">
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-email">Email</label>
+                            <input type="email" id="signup-email" placeholder="Enter your email">
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-password">Password</label>
+                            <input type="password" id="signup-password" placeholder="Choose a password">
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-first-name">First Name</label>
+                            <input type="text" id="signup-first-name" placeholder="Enter your first name">
+                        </div>
+                        <div class="form-group">
+                            <label for="signup-last-name">Last Name</label>
+                            <input type="text" id="signup-last-name" placeholder="Enter your last name">
+                        </div>
+                        <div class="form-group">
+                            <label for="user-type">I am a:</label>
+                            <select id="user-type">
+                                <option value="patient">Patient</option>
+                                <option value="healthcare_provider">Healthcare Provider</option>
+                            </select>
+                        </div>
+                        <button id="signup-btn" class="btn btn-primary">Sign Up</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main App -->
+        <div id="app-container" class="hidden">
+            <!-- Navigation -->
+            <nav class="sidebar">
+                <div class="sidebar-header">
+                    <img src="assets/logo.png" alt="Logo" class="logo">
+                    <h2>DysMonitor</h2>
+                </div>
+                <ul class="nav-links">
+                    <li class="nav-item active" data-page="dashboard">
+                        <i class="fas fa-home"></i> Dashboard
+                    </li>
+                    <li class="nav-item" data-page="vitals">
+                        <i class="fas fa-heartbeat"></i> Vitals
+                    </li>
+                    <li class="nav-item" data-page="symptoms">
+                        <i class="fas fa-notes-medical"></i> Symptoms
+                    </li>
+                    <li class="nav-item" data-page="health-summary">
+                        <i class="fas fa-file-medical-alt"></i> Health Summary
+                    </li>
+                    <li class="nav-item" data-page="alerts">
+                        <i class="fas fa-bell"></i> Alerts
+                        <span id="alert-badge" class="badge hidden">0</span>
+                    </li>
+                </ul>
+                <div class="sidebar-footer">
+                    <div id="user-info">
+                        <span id="username">User</span>
+                    </div>
+                    <button id="logout-btn" class="btn btn-outline">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <div id="alert-toast" class="toast hidden">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="alert-message"></span>
+                    <button id="close-alert" class="close-btn">&times;</button>
+                </div>
+
+                <!-- Dashboard Page -->
+                <!-- <div id="dashboard-page" class="page active">
+                    <h1>Dashboard</h1>
+                    <div class="dashboard-cards">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Latest Vitals</h3>
+                            </div>
+                            <div class="card-body" id="latest-vitals">
+                                <div class="loading-spinner"></div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Recent Symptoms</h3>
+                            </div>
+                            <div class="card-body" id="recent-symptoms">
+                                <div class="loading-spinner"></div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Recent Alerts</h3>
+                            </div>
+                            <div class="card-body" id="recent-alerts">
+                                <div class="loading-spinner"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Health Trends</h3>
+                            <div class="form-group inline">
+                                <select id="trend-vital-type">
+                                    <option value="heart_rate">Heart Rate</option>
+                                    <option value="blood_pressure_systolic">Blood Pressure (Systolic)</option>
+                                    <option value="blood_pressure_diastolic">Blood Pressure (Diastolic)</option>
+                                    <option value="temperature">Temperature</option>
+                                    <option value="oxygen_saturation">Oxygen Saturation</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="vital-trend-chart"></canvas>
+                        </div>
+                    </div>
+                </div> -->
+                <!-- Dashboard Page -->
+                <div id="dashboard-page" class="page active">
+                    <h1>Dashboard</h1>
+                    
+                    <!-- Add patient-only quick stats section -->
+                    <div class="patient-only quick-stats">
+                        <div class="stats-row">
+                            <div class="stat-card">
+                                <i class="fas fa-calendar-check"></i>
+                                <div class="stat-content">
+                                    <span class="stat-value" id="days-logged">0</span>
+                                    <span class="stat-label">Days Logged</span>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-bell"></i>
+                                <div class="stat-content">
+                                    <span class="stat-value" id="active-alerts">0</span>
+                                    <span class="stat-label">Active Alerts</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Provider-specific patient selector will be added programmatically -->
+                    
+                    <div class="dashboard-cards">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Latest Vitals</h3>
+                            </div>
+                            <div class="card-body" id="latest-vitals">
+                                <div class="loading-spinner"></div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Recent Symptoms</h3>
+                            </div>
+                            <div class="card-body" id="recent-symptoms">
+                                <div class="loading-spinner"></div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3>Recent Alerts</h3>
+                            </div>
+                            <div class="card-body" id="recent-alerts">
+                                <div class="loading-spinner"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Health Trends</h3>
+                            <div class="form-group inline">
+                                <select id="trend-vital-type">
+                                    <option value="heart_rate">Heart Rate</option>
+                                    <option value="blood_pressure_systolic">Blood Pressure (Systolic)</option>
+                                    <option value="blood_pressure_diastolic">Blood Pressure (Diastolic)</option>
+                                    <option value="temperature">Temperature</option>
+                                    <option value="oxygen_saturation">Oxygen Saturation</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="vital-trend-chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Provider-only clinical notes section (will be added programmatically) -->
+                </div>
+
+
+                <!-- Vitals Page -->
+                <div id="vitals-page" class="page">
+                    <h1>Record Vitals</h1>
+                    <div class="card patient-only">
+                        <div class="card-header">
+                            <h3>Add New Vital</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="add-vital-form">
+                                <div class="form-group">
+                                    <label for="vital-type">Vital Type</label>
+                                    <select id="vital-type" required>
+                                        <option value="heart_rate">Heart Rate</option>
+                                        <option value="blood_pressure_systolic">Blood Pressure (Systolic)</option>
+                                        <option value="blood_pressure_diastolic">Blood Pressure (Diastolic)</option>
+                                        <option value="temperature">Temperature</option>
+                                        <option value="oxygen_saturation">Oxygen Saturation</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="vital-value">Value</label>
+                                    <input type="number" id="vital-value" step="0.1" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Vital</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Vital History</h3>
+                            <div class="form-group inline">
+                                <select id="vital-history-type">
+                                    <option value="">All Vitals</option>
+                                    <option value="heart_rate">Heart Rate</option>
+                                    <option value="blood_pressure_systolic">Blood Pressure (Systolic)</option>
+                                    <option value="blood_pressure_diastolic">Blood Pressure (Diastolic)</option>
+                                    <option value="temperature">Temperature</option>
+                                    <option value="oxygen_saturation">Oxygen Saturation</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Type</th>
+                                            <th>Value</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="vitals-table-body">
+                                        <tr>
+                                            <td colspan="4" class="loading">Loading...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Symptoms Page -->
+                <div id="symptoms-page" class="page">
+                    <h1>Record Symptoms</h1>
+                    <div class="card patient-only">
+                        <div class="card-header">
+                            <h3>Add New Symptom</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="add-symptom-form">
+                                <div class="form-group">
+                                    <label for="symptom-name">Symptom</label>
+                                    <select id="symptom-name" required>
+                                        <option value="fatigue">Fatigue</option>
+                                        <option value="dizziness">Dizziness</option>
+                                        <option value="headache">Headache</option>
+                                        <option value="palpitations">Palpitations</option>
+                                        <option value="nausea">Nausea</option>
+                                        <option value="brain_fog">Brain Fog</option>
+                                        <option value="shortness_of_breath">Shortness of Breath</option>
+                                        <option value="chest_pain">Chest Pain</option>
+                                        <option value="custom">Other (specify)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group hidden" id="custom-symptom-group">
+                                    <label for="custom-symptom">Specify Symptom</label>
+                                    <input type="text" id="custom-symptom" placeholder="Enter symptom name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="symptom-severity">Severity (1-10)</label>
+                                    <div class="range-container">
+                                        <input type="range" id="symptom-severity" min="1" max="10" value="5">
+                                        <span id="severity-value">5</span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="symptom-notes">Notes (Optional)</label>
+                                    <textarea id="symptom-notes" rows="3" placeholder="Add any additional details about this symptom"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Save Symptom</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Symptom History</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Symptom</th>
+                                            <th>Severity</th>
+                                            <th>Notes</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="symptoms-table-body">
+                                        <tr>
+                                            <td colspan="4" class="loading">Loading...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Health Summary Page -->
+                <div id="health-summary-page" class="page">
+                    <h1>Health Summary</h1>
+                    <div class="summary-controls">
+                        <div class="form-group">
+                            <label for="summary-timeframe">Timeframe</label>
+                            <select id="summary-timeframe">
+                                <option value="7">Last 7 days</option>
+                                <option value="30" selected>Last 30 days</option>
+                                <option value="90">Last 3 months</option>
+                                <option value="180">Last 6 months</option>
+                            </select>
+                        </div>
+                        <button id="generate-summary-btn" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i> Generate Summary
+                        </button>
+                        <button id="export-summary-btn" class="btn btn-outline">
+                            <i class="fas fa-file-download"></i> Export as PDF
+                        </button>
+                        <!-- Provider-only buttons -->
+                        <button id="share-with-patient-btn" class="btn btn-outline provider-only">
+                            <i class="fas fa-share-alt"></i> Share with Patient
+                        </button>
+                    </div>
+                    
+                    <div id="summary-content" class="card">
+                        <div class="card-header">
+                            <h3>Health Summary Report</h3>
+                            <span id="summary-date-range"></span>
+                        </div>
+                        <div class="card-body">
+                            <div id="summary-loading" class="loading-spinner"></div>
+                            <div id="summary-results" class="hidden">
+                                <div class="summary-section">
+                                    <h4>Vital Statistics</h4>
+                                    <div id="vital-statistics"></div>
+                                </div>
+                                <div class="summary-section">
+                                    <h4>Symptom Frequency</h4>
+                                    <div id="symptom-statistics"></div>
+                                </div>
+                                <div class="summary-section">
+                                    <h4>Alert Summary</h4>
+                                    <div id="alert-statistics"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts Page -->
+                <div id="alerts-page" class="page">
+                    <h1>Alerts</h1>
+                    <div class="alert-filters">
+                        <div class="form-group">
+                            <select id="alert-filter">
+                                <option value="all">All Alerts</option>
+                                <option value="unread">Unread Alerts</option>
+                                <option value="read">Read Alerts</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="alerts-container">
+                                <div class="loading-spinner"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Patients Page (Provider Only) -->
+                <div id="patients-page" class="page provider-only">
+                    <h1>My Patients</h1>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Patient List</h3>
+                        </div>
+                        <div class="card-body">
+                            <div id="patients-list">
+                                <div class="loading-spinner"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/vitals.js"></script>
+    <script src="js/symptoms.js"></script>
+    <script src="js/alerts.js"></script>
+    <script src="js/health-summary.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/provider.js"></script>
+</body>
+</html>
