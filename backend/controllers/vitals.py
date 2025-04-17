@@ -80,7 +80,18 @@ def add_vital():
 @vitals_bp.route('/', methods=['GET'])
 @jwt_required()
 def get_vitals():
-    user_id = get_jwt_identity()
+    #user_id = get_jwt_identity()
+    #user_id = get_jwt_identity()
+    current_user_id = get_jwt_identity()
+    current_user = User.query.get(current_user_id)
+
+    # Get optional patient_id param if provider
+    patient_id = request.args.get('patient_id')
+
+    if current_user.user_type == 'healthcare_provider' and patient_id:
+        user_id = patient_id
+    else:
+        user_id = current_user_id
     
     # Parse query parameters
     vital_type = request.args.get('type')

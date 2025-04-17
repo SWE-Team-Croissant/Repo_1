@@ -1,7 +1,8 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models.models import db, SymptomRecord
+from models.models import db, SymptomRecord, User
 from datetime import datetime
+
 
 symptoms_bp = Blueprint('symptoms', __name__)
 
@@ -43,8 +44,17 @@ def add_symptom():
 @symptoms_bp.route('/', methods=['GET'])
 @jwt_required()
 def get_symptoms():
-    user_id = get_jwt_identity()
-    
+    #user_id = get_jwt_identity()
+    current_user_id = get_jwt_identity()
+    current_user = User.query.get(current_user_id)
+
+    # Get optional patient_id param if provider
+    patient_id = request.args.get('patient_id')
+
+    if current_user.user_type == 'healthcare_provider' and patient_id:
+        user_id = patient_id
+    else:
+        user_id = current_user_id
     # Parse query parameters
     symptom_name = request.args.get('name')
     start_date = request.args.get('start_date')

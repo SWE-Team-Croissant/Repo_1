@@ -53,31 +53,17 @@ async function refreshDashboard() {
 async function loadLatestVitals(patientId = null) {
     const latestVitalsContainer = document.getElementById('latest-vitals');
     latestVitalsContainer.innerHTML = '<div class="loading-spinner"></div>';
-    
-    try {
-        const token = localStorage.getItem('token');
-        let url = `${API_BASE_URL}/vitals/?limit=5`;
-        
-        // Add patient ID if provided (for provider view)
-        if (patientId) {
-            url += `&patient_id=${patientId}`;
-        }
-        
-        const response = await fetch(url, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            },
-        });
-        const vitals = await response.json();
+    const userType = localStorage.getItem('user_type');
+    const isProvider = userType === 'healthcare_provider';
 
-        //const vitals = await api.getVitals({ limit: 5 });
-        
-        if (vitals.length === 0) {
-            latestVitalsContainer.innerHTML = '<p class="text-center">No vital records found.</p>';
-            return;
+    try {
+        let symptoms;
+        if (isProvider){
+            const patientID = localStorage.getItem('selected_patient_id');
+            vitals = await api.getVitals({patient_id: patientID, limit:10});
+        }else{
+            vitals = await api.getVitals({limit:10});
         }
-        
-        // Group by vital type (take the latest of each type)
         const latestByType = {};
         vitals.forEach(vital => {
             if (!latestByType[vital.vital_type] || 
@@ -86,6 +72,7 @@ async function loadLatestVitals(patientId = null) {
             }
         });
         
+        console.log(latestByType, " grouped vitals");
         // Create HTML for each vital
         let html = '';
         Object.values(latestByType).forEach(vital => {
@@ -115,9 +102,18 @@ async function loadLatestVitals(patientId = null) {
 async function loadRecentSymptoms() {
     const recentSymptomsContainer = document.getElementById('recent-symptoms');
     recentSymptomsContainer.innerHTML = '<div class="loading-spinner"></div>';
-    
+    const userType = localStorage.getItem('user_type');
+    const isProvider = userType === 'healthcare_provider';
     try {
-        const symptoms = await api.getSymptoms({ limit: 5 });
+        let symptoms;
+        if (isProvider){
+            const patientID = localStorage.getItem('selected_patient_id');
+            symptoms = await api.getSymptoms({patient_id: patientID, limit:10 });
+        }else{
+            symptoms = await api.getSymptoms({ limit: 10 });
+        }
+        
+        console.log(symptoms, "symptoms in dashboard");
         
         if (symptoms.length === 0) {
             recentSymptomsContainer.innerHTML = '<p class="text-center">No symptom records found.</p>';
@@ -126,7 +122,7 @@ async function loadRecentSymptoms() {
         
         // Create HTML for each symptom
         let html = '';
-        symptoms.slice(0, 5).forEach(symptom => {
+        symptoms.slice(0, 10).forEach(symptom => {
             const displayName = formatSymptomName(symptom.symptom_name);
             
             html += `
@@ -151,9 +147,16 @@ async function loadRecentSymptoms() {
 async function loadRecentAlerts() {
     const recentAlertsContainer = document.getElementById('recent-alerts');
     recentAlertsContainer.innerHTML = '<div class="loading-spinner"></div>';
-    
+    const userType = localStorage.getItem('user_type');
+    const isProvider = userType === 'healthcare_provider';
     try {
-        const alerts = await api.getAlerts({ limit: 5 });
+        let alerts;
+        if (isProvider){
+            const patientID = localStorage.getItem('selected_patient_id');
+            alerts = await api.getAlerts({patient_id: patientID, limit:10 });
+        }else{
+            alerts = await api.getAlerts({ limit: 10 });
+        }
         
         if (alerts.length === 0) {
             recentAlertsContainer.innerHTML = '<p class="text-center">No alerts found.</p>';

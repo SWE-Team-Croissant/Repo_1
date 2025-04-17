@@ -8,8 +8,16 @@ alerts_bp = Blueprint('alerts', __name__)
 @alerts_bp.route('/', methods=['GET'])
 @jwt_required()
 def get_alerts():
-    user_id = get_jwt_identity()
-    
+    current_user_id = get_jwt_identity()
+    current_user = User.query.get(current_user_id)
+
+    # Get optional patient_id param if provider
+    patient_id = request.args.get('patient_id')
+
+    if current_user.user_type == 'healthcare_provider' and patient_id:
+        user_id = patient_id
+    else:
+        user_id = current_user_id
     # Parse query parameters
     is_read = request.args.get('is_read')
     limit = request.args.get('limit', default=10, type=int)
@@ -40,7 +48,16 @@ def get_alerts():
 @alerts_bp.route('/<int:alert_id>/read', methods=['PUT'])
 @jwt_required()
 def mark_alert_read(alert_id):
-    user_id = get_jwt_identity()
+    current_user_id = get_jwt_identity()
+    current_user = User.query.get(current_user_id)
+
+    # Get optional patient_id param if provider
+    patient_id = request.args.get('patient_id')
+
+    if current_user.user_type == 'healthcare_provider' and patient_id:
+        user_id = patient_id
+    else:
+        user_id = current_user_id
     
     # Find alert
     alert = Alert.query.filter_by(id=alert_id, user_id=user_id).first()
