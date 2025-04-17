@@ -78,6 +78,7 @@ addSymptomForm.addEventListener('submit', async (e) => {
         };
 
         const response = await api.addSymptom(symptomData);
+        // here the symptom call is sent to api 
 
         if (response.error) {
             showToast(response.error, 'error');

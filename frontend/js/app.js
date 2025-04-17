@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const navItems = document.querySelectorAll('.nav-item');
     const pages = document.querySelectorAll('.page');
     const userType = localStorage.getItem('user_type');
+    console.log("hellooooo")
     
     // Check user type and adjust UI accordingly
     if (userType) {

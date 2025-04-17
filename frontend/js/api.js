@@ -63,10 +63,10 @@ const api = {
         return await response.json();
     },
     
-    // Symptoms
+     // Symptoms  The symptoms from symtoms.js come in here 
     addSymptom: async (symptomData) => {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/symptoms/`, {
+        const response = await fetch(`${API_BASE_URL}/symptoms/`, { // here is error 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ const api = {
         const queryParams = new URLSearchParams(params).toString();
         const url = `${API_BASE_URL}/symptoms/${queryParams ? `?${queryParams}` : ''}`;
         
-        const response = await fetch(url, {
+        const response = await fetch(url, {// also here is error 
             headers: {
                 'Authorization': `Bearer ${token}`,
             },
