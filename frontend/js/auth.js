@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check if user is already logged in
     if (localStorage.getItem('token')) {
         showApp();
+        initializeApp();
     } else {
         showAuth();
     }
@@ -66,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Show main app
             showApp();
+            initializeApp();
             
             // Reset form
             document.getElementById('login-username').value = '';
@@ -149,7 +151,10 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem('user_type');
         
         // Show auth container
-        showAuth();
+        //showAuth();
+        localStorage.clear(); // Clear all auth/user data
+        showAuth();           // Show login/signup screen
+        location.reload(); 
     });
     
     // Helper functions
@@ -164,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Update user info
         const username = localStorage.getItem('username');
+        const userType = localStorage.getItem("user-type")
         if (username) {
             document.getElementById('username').textContent = username;
         }

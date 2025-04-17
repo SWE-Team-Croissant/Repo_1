@@ -6,6 +6,7 @@ function initializeDashboard() {
 // Refresh dashboard data
 async function refreshDashboard() {
     const userType = localStorage.getItem('user_type');
+    console.log(userType, "dashboard");
     const isProvider = userType === 'healthcare_provider';
     
     // If provider, ensure patient selector is present

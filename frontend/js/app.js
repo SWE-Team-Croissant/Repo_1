@@ -1,10 +1,12 @@
-document.addEventListener('DOMContentLoaded', () => {
+// 
+// document.addEventListener('DOMContentLoaded', () => {
+function initializeApp(){
     // Page navigation
     const navItems = document.querySelectorAll('.nav-item');
     const pages = document.querySelectorAll('.page');
     const userType = localStorage.getItem('user_type');
-    console.log("hellooooo")
-    
+    console.log(userType, " app before config")
+
     // Check user type and adjust UI accordingly
     if (userType) {
         configureUIForUserType(userType);
@@ -61,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Failed to check for unread alerts:', error);
         }
     }
-});
+};
 
 // Format date function
 function formatDate(dateString) {
@@ -87,6 +89,7 @@ function formatTableDate(dateString) {
 }
 // Function to configure UI based on user type
 function configureUIForUserType(userType) {
+    console.log(userType, "during config");
     if (userType === 'healthcare_provider') {
         // Show provider-specific elements
         document.querySelectorAll('.provider-only').forEach(el => el.classList.remove('hidden'));
@@ -103,6 +106,7 @@ function configureUIForUserType(userType) {
         sidebar.querySelector('.nav-links').insertBefore(providerNavItem, dashboardItem.nextSibling);
         
         // Add provider-specific page
+        // patients list error here
         const mainContent = document.querySelector('.main-content');
         const patientsPage = document.createElement('div');
         patientsPage.id = 'patients-page';
@@ -134,7 +138,7 @@ function configureUIForUserType(userType) {
                     page.classList.remove('active');
                 }
             });
-            
+            // error here probably, function not implemented
             loadPatientsList();
         });
     } else {
