@@ -2,8 +2,7 @@
 // document.addEventListener('DOMContentLoaded', () => {
 function initializeApp(){
     // Page navigation
-    const navItems = document.querySelectorAll('.nav-item');
-    const pages = document.querySelectorAll('.page');
+    
     const userType = localStorage.getItem('user_type');
     console.log(userType, " app before config")
 
@@ -11,6 +10,8 @@ function initializeApp(){
     if (userType) {
         configureUIForUserType(userType);
     }
+    const navItems = document.querySelectorAll('.nav-item');
+    const pages = document.querySelectorAll('.page');
     navItems.forEach(item => {
         item.addEventListener('click', () => {
             const targetPage = item.getAttribute('data-page');
@@ -39,6 +40,8 @@ function initializeApp(){
                 generateHealthSummary();
             } else if (targetPage === 'alerts') {
                 loadAlerts();
+            } else if (targetPage === "patients"){
+                loadPatientsList();
             }
         });
     });
@@ -108,40 +111,42 @@ function configureUIForUserType(userType) {
         
         // Add provider-specific page
         // patients list error here
-        const mainContent = document.querySelector('.main-content');
-        const patientsPage = document.createElement('div');
-        patientsPage.id = 'patients-page';
-        patientsPage.className = 'page';
-        patientsPage.innerHTML = `
-            <h1>My Patients</h1>
-            <div class="card">
-                <div class="card-header">
-                    <h3>Patient List</h3>
-                </div>
-                <div class="card-body">
-                    <div id="patients-list">
-                        <div class="loading-spinner"></div>
+        if (!document.querySelector('#patients-page')) {
+            const mainContent = document.querySelector('.main-content');
+            const patientsPage = document.createElement('div');
+            patientsPage.id = 'patients-page';
+            patientsPage.className = 'page';
+            patientsPage.innerHTML = `
+                <h1>My Patients</h1>
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Patient List</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="patients-list">
+                            <div class="loading-spinner"></div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `;
-        mainContent.appendChild(patientsPage);
-        
+            `;
+            //mainContent.innerHTML = ''; // clears the previous page inner html
+            mainContent.appendChild(patientsPage);
+        }
         // Update navigation handler for new page
-        providerNavItem.addEventListener('click', () => {
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            providerNavItem.classList.add('active');
+        // providerNavItem.addEventListener('click', () => {
+        //     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        //     providerNavItem.classList.add('active');
             
-            document.querySelectorAll('.page').forEach(page => {
-                if (page.id === 'patients-page') {
-                    page.classList.add('active');
-                } else {
-                    page.classList.remove('active');
-                }
-            });
-            // error here probably, function not implemented
-            loadPatientsList();
-        });
+        //     document.querySelectorAll('.page').forEach(page => {
+        //         if (page.id === 'patients-page') {
+        //             page.classList.add('active');
+        //         } else {
+        //             page.classList.remove('active');
+        //         }
+        //     });
+        //     // error here probably, function not implemented
+        //     loadPatientsList();
+        // });
     } else {
         // Patient view (default)
         document.querySelectorAll('.provider-only').forEach(el => el.classList.add('hidden'));
