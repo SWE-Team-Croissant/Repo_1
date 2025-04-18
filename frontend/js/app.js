@@ -48,22 +48,23 @@ function initializeApp(){
     setInterval(checkForUnreadAlerts, 60000); // Check every minute
     
     // Helper functions
-    async function checkForUnreadAlerts() {
-        try {
-            const alertsBadge = document.getElementById('alert-badge');
-            const alerts = await api.getAlerts({ is_read: false });
-            
-            if (alerts.length > 0) {
-                alertsBadge.textContent = alerts.length;
-                alertsBadge.classList.remove('hidden');
-            } else {
-                alertsBadge.classList.add('hidden');
-            }
-        } catch (error) {
-            console.error('Failed to check for unread alerts:', error);
-        }
-    }
 };
+
+async function checkForUnreadAlerts() {
+    try {
+        const alertsBadge = document.getElementById('alert-badge');
+        const alerts = await api.getAlerts({ is_read: false });
+        
+        if (alerts.length > 0) {
+            alertsBadge.textContent = alerts.length;
+            alertsBadge.classList.remove('hidden');
+        } else {
+            alertsBadge.classList.add('hidden');
+        }
+    } catch (error) {
+        console.error('Failed to check for unread alerts:', error);
+    }
+}
 
 // Format date function
 function formatDate(dateString) {

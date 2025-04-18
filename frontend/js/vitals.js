@@ -5,14 +5,22 @@ async function loadVitalHistory() {
     const vitalHistoryType = document.getElementById('vital-history-type').value;
     const vitalsTableBody = document.getElementById('vitals-table-body');
     vitalsTableBody.innerHTML = '<tr><td colspan="4" class="loading">Loading...</td></tr>';
-
+    const userType = localStorage.getItem('user_type');
+    const isProvider = userType === 'healthcare_provider';
     try {
         const params = {};
         if (vitalHistoryType) {
             params.type = vitalHistoryType;
         }
-
-        const vitals = await api.getVitals(params);
+        let vitals;
+        if (isProvider){
+            const patientID = localStorage.getItem('selected_patient_id');
+            params.patient_id=patientID;
+            vitals = await api.getVitals(params);
+        }else{
+            vitals = await api.getVitals(params);
+        }
+        //const vitals = await api.getVitals(params);
 
         if (vitals.length === 0) {
             vitalsTableBody.innerHTML = '<tr><td colspan="4" class="text-center">No vital records found.</td></tr>';

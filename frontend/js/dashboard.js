@@ -57,7 +57,7 @@ async function loadLatestVitals(patientId = null) {
     const isProvider = userType === 'healthcare_provider';
 
     try {
-        let symptoms;
+        let vitals;
         if (isProvider){
             const patientID = localStorage.getItem('selected_patient_id');
             vitals = await api.getVitals({patient_id: patientID, limit:10});

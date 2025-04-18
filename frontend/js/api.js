@@ -104,9 +104,20 @@ const api = {
         return await response.json();
     },
     
-    markAlertRead: async (alertId) => {
+    // markAlertRead: async (alertId) => {
+    //     const token = localStorage.getItem('token');
+    //     const response = await fetch(`${API_BASE_URL}/alerts/${alertId}/read`, {
+    //         method: 'PUT',
+    //         headers: {
+    //             'Authorization': `Bearer ${token}`,
+    //         },
+    //     });
+    //     return await response.json();
+    // },
+    markAlertRead: async ({ alertId, patient_id }) => {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/alerts/${alertId}/read`, {
+        const query = patient_id ? `?patient_id=${patient_id}` : '';
+        const response = await fetch(`${API_BASE_URL}/alerts/${alertId}/read${query}`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,

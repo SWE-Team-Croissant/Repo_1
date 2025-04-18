@@ -5,7 +5,8 @@ async function loadAlerts() {
     const alertFilter = document.getElementById('alert-filter').value;
     const alertsContainer = document.getElementById('alerts-container');
     alertsContainer.innerHTML = '<div class="loading-spinner"></div>';
-
+    const userType = localStorage.getItem('user_type');
+    const isProvider = userType === 'healthcare_provider';
     try {
         const params = {};
         if (alertFilter === 'unread') {
@@ -14,7 +15,13 @@ async function loadAlerts() {
             params.is_read = true;
         }
 
-        const alerts = await api.getAlerts(params);
+        let alerts;
+        if (isProvider){
+            const patientID = localStorage.getItem('selected_patient_id');
+            alerts = await api.getAlerts({patient_id: patientID, params });
+        }else{
+            alerts = await api.getAlerts({ params});
+        };
 
         if (alerts.length === 0) {
             alertsContainer.innerHTML = '<p class="text-center">No alerts found.</p>';
@@ -44,7 +51,14 @@ async function loadAlerts() {
             button.addEventListener('click', async (e) => {
                 const alertId = e.target.getAttribute('data-id');
                 try {
-                    await api.markAlertRead(alertId);
+                    let readAlerts;
+                    if (isProvider){
+                        const patientID = localStorage.getItem('selected_patient_id');
+                        readAlerts = await api.markAlertRead({patient_id: patientID,alertId});
+                    }else{
+                        readAlerts = await api.markAlertRead({alertId});
+                    };
+                    // await api.markAlertRead(alertId,patientID);
                     showToast('Alert marked as read', 'success');
                     loadAlerts();
                     // Update alert badge count
@@ -82,6 +96,7 @@ function addMarkAllReadButton() {
                 for (const alert of unreadAlerts) {
                     const alertId = alert.querySelector('.mark-read-btn').getAttribute('data-id');
                     await api.markAlertRead(alertId);
+                    // HEREEEEEEEEEEEEEEE
                 }
                 showToast('All alerts marked as read', 'success');
                 loadAlerts();

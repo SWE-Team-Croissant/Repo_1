@@ -4,10 +4,18 @@
 async function loadSymptomHistory() {
     const symptomsTableBody = document.getElementById('symptoms-table-body');
     symptomsTableBody.innerHTML = '<tr><td colspan="4" class="loading">Loading...</td></tr>';
+    const userType = localStorage.getItem('user_type');
+    const isProvider = userType === 'healthcare_provider';
 
     try {
-        const symptoms = await api.getSymptoms();
-
+        let symptoms;
+        if (isProvider){
+            const patientID = localStorage.getItem('selected_patient_id');
+            symptoms = await api.getSymptoms({patient_id: patientID});
+        }else{
+            symptoms = await api.getSymptoms();
+        }
+        
         if (symptoms.length === 0) {
             symptomsTableBody.innerHTML = '<tr><td colspan="4" class="text-center">No symptom records found.</td></tr>';
             return;
