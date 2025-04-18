@@ -47,11 +47,6 @@ async function refreshDashboard() {
         // Add clinical notes section
         addClinicalNotesSection();
     }
-    // const selector = document.getElementById('patient-select');
-    // const selectedPatientId = localStorage.getItem('selected_patient_id');
-    //     if (selectedPatientId) {
-    //         selector.value = selectedPatientId;
-    //     }
     loadPatientsForSelector();
 }
 

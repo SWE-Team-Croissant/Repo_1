@@ -66,7 +66,7 @@ const api = {
      // Symptoms  The symptoms from symtoms.js come in here 
     addSymptom: async (symptomData) => {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/symptoms/`, { // here is error 
+        const response = await fetch(`${API_BASE_URL}/symptoms/`, {  
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -127,15 +127,36 @@ const api = {
     },
     
     // Health Summary
-    getHealthSummary: async (timeframe = 30) => {
+    // getHealthSummary: async (timeframe = 30) => {
+    //     const token = localStorage.getItem('token');
+    //     const response = await fetch(`${API_BASE_URL}/health/summary?timeframe=${timeframe}`, {
+    //         headers: {
+    //             'Authorization': `Bearer ${token}`,
+    //         },
+    //     });
+    //     return await response.json();
+    // },
+    getHealthSummary: async ({ params = {}, patient_id } = {}) => {
         const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/health/summary?timeframe=${timeframe}`, {
+        const query = new URLSearchParams();
+    
+        // Add timeframe from params (default fallback to 30 if missing)
+        query.append('timeframe', params.summaryTimeframe || 30);
+    
+        // Add patient ID if provided (for providers)
+        if (patient_id) {
+            query.append('patient_id', patient_id);
+        }
+    
+        const response = await fetch(`${API_BASE_URL}/health/summary?${query.toString()}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
             },
         });
+    
         return await response.json();
     },
+    
     
     getHealthTrends: async (params = {}) => {
         const token = localStorage.getItem('token');

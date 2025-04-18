@@ -7,12 +7,24 @@ async function generateHealthSummary() {
     const summaryLoading = document.getElementById('summary-loading');
     const summaryResults = document.getElementById('summary-results');
     const summaryDateRange = document.getElementById('summary-date-range');
+    const userType = localStorage.getItem('user_type');
+    const isProvider = userType === 'healthcare_provider';
 
     summaryLoading.classList.remove('hidden');
     summaryResults.classList.add('hidden');
-
     try {
-        const summary = await api.getHealthSummary(summaryTimeframe);
+        const params = {
+            summaryTimeframe: summaryTimeframe
+        };
+
+        let summary;
+        if (isProvider){
+            const patientID = localStorage.getItem('selected_patient_id');
+            summary = await api.getHealthSummary({params,patient_id: patientID});
+        }else{
+            summary = await api.getHealthSummary({params});
+        };
+        //const summary = await api.getHealthSummary(summaryTimeframe);
 
         // Update date range
         summaryDateRange.textContent = `${formatTableDate(summary.timeframe.start_date)} - ${formatTableDate(summary.timeframe.end_date)}`;

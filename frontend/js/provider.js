@@ -13,7 +13,6 @@ async function loadPatientsList() {
         });
         
         const patients = await response.json();
-        console.log(patients, ": patients from loadpeitentslist")
         if (patients.length === 0) {
             patientsListContainer.innerHTML = '<p class="text-center">No patients assigned to you.</p>';
             return;
