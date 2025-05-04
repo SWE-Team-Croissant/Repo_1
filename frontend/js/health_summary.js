@@ -98,9 +98,20 @@ document.getElementById('export-summary-btn').addEventListener('click', async ()
         
         // In a real application, we would implement PDF generation here
         // For this example, we'll simulate a delay
+        
         setTimeout(() => {
             showToast('Health summary exported successfully', 'success');
         }, 1500);
+
+        const summaryContent = document.getElementById('summary-content');
+        const opt = {
+            margin:       0.5,
+            filename:     'health_summary.pdf',
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        html2pdf().from(summaryContent).set(opt).save();
         
     } catch (error) {
         showToast('Failed to export summary', 'error');
