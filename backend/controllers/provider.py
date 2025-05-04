@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models.models import db, User, VitalRecord, SymptomRecord, Alert
+from models.models import db, ClinicalNote, User, VitalRecord, SymptomRecord, Alert
+from datetime import datetime, timedelta
+
 
 provider_bp = Blueprint('provider', __name__)
 
@@ -62,15 +64,24 @@ def get_clinical_notes():
     if not patient_id:
         return jsonify({"error": "Patient ID is required"}), 400
     
-    # In a real implementation, you would query clinical notes from database
-    # For now, return empty list since this model might not exist yet
-    return jsonify([]), 200
+    notes = ClinicalNote.query.filter_by(patient_id=patient_id).order_by(ClinicalNote.created_at.desc()).all()
+    
+    result = [{
+        "id": note.id,
+        "content": note.content,
+        "created_at": note.created_at.isoformat(),
+        "provider_id": note.provider_id,
+        "patient_id": note.patient_id
+    } for note in notes]
+    
+    return jsonify(result), 200
 
 @provider_bp.route('/notes', methods=['POST'])
 @jwt_required()
 def add_clinical_note():
     provider_id = get_jwt_identity()
     provider = User.query.get(provider_id)
+    #provider_last = provider.last_name
     
     # Verify user is a healthcare provider
     if provider.user_type != 'healthcare_provider':
@@ -82,12 +93,18 @@ def add_clinical_note():
     if not all(k in data for k in ('patient_id', 'content')):
         return jsonify({"error": "Missing required fields"}), 400
     
-    # In a real implementation, you would create a clinical note in database
-    # For now, return success
-    return jsonify({
-        "id": 1,
-        "content": data['content'],
-        "created_at": datetime.utcnow().isoformat(),
-        "provider_id": provider_id,
-        "patient_id": data['patient_id']
-    }), 201
+    patient = User.query.get(data['patient_id'])
+    if not patient or patient.user_type != 'patient':
+        return jsonify({"error": "Patient not found"}), 404
+    
+    note = ClinicalNote(
+        content=data['content'],
+        provider_id=provider_id,
+        #provider_last_name= provider_last,
+        patient_id=data['patient_id'],
+        created_at=datetime.utcnow()
+    )
+    db.session.add(note)
+    db.session.commit()
+    return jsonify({"message": "Clinical note added successfully"}), 201
+

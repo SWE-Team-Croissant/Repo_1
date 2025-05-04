@@ -29,7 +29,7 @@ class SymptomRecord(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     symptom_name = db.Column(db.String(100), nullable=False)
     severity = db.Column(db.Integer, nullable=False)  # 1-10 scale
-    notes = db.Column(db.Text, nullable=True)
+    notes = db.Column(db.Text, nullable=True) # changed from .Text
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Alert(db.Model):
@@ -45,4 +45,5 @@ class ClinicalNote(db.Model):
     patient_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     provider_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     content = db.Column(db.Text, nullable=False)
+    #provider_last_name = db.Column(db.String(50), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)

@@ -93,11 +93,27 @@ def get_health_summary():
 @summary_bp.route('/trends', methods=['GET'])
 @jwt_required()
 def get_health_trends():
-    user_id = get_jwt_identity()
+    current_user_id = get_jwt_identity()
+    current_user = User.query.get(current_user_id)
+
+
+    # Handle optional patient_id for providers
+    patient_id = request.args.get('patient_id', type=int)
+    if current_user.user_type == 'healthcare_provider' and patient_id:
+        target_user = User.query.get(patient_id)
+        if not target_user or target_user.user_type != 'patient':
+            return jsonify({"error": "Patient not found"}), 404
+        user_id = target_user.id
+        user_info = target_user
+    else:
+        user_id = current_user.id
+        user_info = current_user
+
+    # user_id = get_jwt_identity()
     
     # Parse parameters
     vital_type = request.args.get('vital_type')
-    symptom_name = request.args.get('symptom_name')
+    # symptom_name = request.args.get('symptom_name')
     days = request.args.get('days', default=30, type=int)
     
     start_date = datetime.utcnow() - timedelta(days=days)
@@ -120,17 +136,17 @@ def get_health_trends():
         } for record in vital_records]
     
     # Get symptom trends if specified
-    if symptom_name:
-        symptom_records = SymptomRecord.query.filter_by(
-            user_id=user_id,
-            symptom_name=symptom_name
-        ).filter(
-            SymptomRecord.timestamp >= start_date
-        ).order_by(SymptomRecord.timestamp).all()
+    # if symptom_name:
+    #     symptom_records = SymptomRecord.query.filter_by(
+    #         user_id=user_id,
+    #         symptom_name=symptom_name
+    #     ).filter(
+    #         SymptomRecord.timestamp >= start_date
+    #     ).order_by(SymptomRecord.timestamp).all()
         
-        trends['symptoms'] = [{
-            "timestamp": record.timestamp.isoformat(),
-            "severity": record.severity
-        } for record in symptom_records]
+    #     trends['symptoms'] = [{
+    #         "timestamp": record.timestamp.isoformat(),
+    #         "severity": record.severity
+    #     } for record in symptom_records]
     
     return jsonify(trends), 200
