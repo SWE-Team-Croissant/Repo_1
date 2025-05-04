@@ -38,6 +38,7 @@ async function refreshDashboard() {
     loadRecentSymptoms(patientId);
     loadRecentAlerts(patientId);
     loadVitalTrend(patientId);
+    loadClinicalNotes();
     
     // Set up trend type change listener
     document.getElementById('trend-vital-type').addEventListener('change', () => loadVitalTrend(patientId));
@@ -381,7 +382,7 @@ async function loadClinicalNotes() {
                 <div class="note-item">
                     <div class="note-meta">
                         <span class="note-date">${formatDate(note.created_at)}</span>
-                        <span class="note-author">by Dr. ${note.provider_name}</span>
+                        <span class="note-author">by Dr. id: ${note.provider_id}</span>
                     </div>
                     <div class="note-content">${note.content}</div>
                 </div>
