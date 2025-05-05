@@ -95,19 +95,19 @@ def get_health_summary():
 def get_health_trends():
     current_user_id = get_jwt_identity()
     current_user = User.query.get(current_user_id)
-
+    user_id = current_user.id
 
     # Handle optional patient_id for providers
-    patient_id = request.args.get('patient_id', type=int)
+    patient_id = request.args.get('patient_id')
     if current_user.user_type == 'healthcare_provider' and patient_id:
-        target_user = User.query.get(patient_id)
-        if not target_user or target_user.user_type != 'patient':
-            return jsonify({"error": "Patient not found"}), 404
-        user_id = target_user.id
-        user_info = target_user
+        # target_user = User.query.get(patient_id)
+        # if not target_user or target_user.user_type != 'patient':
+        #     return jsonify({"error": "Patient not found"}), 404
+        user_id = patient_id
+        #user_info = target_user
     else:
         user_id = current_user.id
-        user_info = current_user
+        #user_info = current_user
 
     # user_id = get_jwt_identity()
     
@@ -134,19 +134,5 @@ def get_health_trends():
             "value": record.value,
             "is_normal": record.is_normal
         } for record in vital_records]
-    
-    # Get symptom trends if specified
-    # if symptom_name:
-    #     symptom_records = SymptomRecord.query.filter_by(
-    #         user_id=user_id,
-    #         symptom_name=symptom_name
-    #     ).filter(
-    #         SymptomRecord.timestamp >= start_date
-    #     ).order_by(SymptomRecord.timestamp).all()
-        
-    #     trends['symptoms'] = [{
-    #         "timestamp": record.timestamp.isoformat(),
-    #         "severity": record.severity
-    #     } for record in symptom_records]
     
     return jsonify(trends), 200

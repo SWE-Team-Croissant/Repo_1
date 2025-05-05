@@ -22,7 +22,6 @@ db.init_app(app)
 jwt = JWTManager(app)
 bcrypt = Bcrypt(app)
 CORS(app)
-app.register_blueprint(provider_bp, url_prefix='/api/health')
 
 # Create tables
 with app.app_context():
@@ -40,7 +39,10 @@ app.register_blueprint(auth_bp, url_prefix='/api/auth')
 app.register_blueprint(vitals_bp, url_prefix='/api/vitals')
 app.register_blueprint(symptoms_bp, url_prefix='/api/symptoms')
 app.register_blueprint(alerts_bp, url_prefix='/api/alerts')
+#app.register_blueprint(summary_bp, url_prefix='/api/health')
 app.register_blueprint(summary_bp, url_prefix='/api/health')
+app.register_blueprint(provider_bp, url_prefix='/api/health')
+
 # this crashes everything 
 #app.register_blueprint(provider_bp, url_prefix='/api/provider')
 

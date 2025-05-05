@@ -147,7 +147,7 @@ const api = {
         if (patient_id) {
             query.append('patient_id', patient_id);
         }
-    
+        
         const response = await fetch(`${API_BASE_URL}/health/summary?${query.toString()}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -162,6 +162,7 @@ const api = {
         const token = localStorage.getItem('token');
         const queryParams = new URLSearchParams(params).toString();
         const url = `${API_BASE_URL}/health/trends${queryParams ? `?${queryParams}` : ''}`;
+        //const url = `${API_BASE_URL}/health/trends${queryParams ? `?${queryParams}` : ''}`;
         
         const response = await fetch(url, {
             headers: {
@@ -170,4 +171,40 @@ const api = {
         });
         return await response.json();
     },
+
+
+    // set up clinical note api 
+
+    // getNotes: async (params = {}) => {
+    //     const token = localStorage.getItem('token');
+    //     const queryParams = new URLSearchParams(params).toString();
+    //     const url = `${API_BASE_URL}/health/notes${queryParams ? `?${queryParams}` : ''}`;
+        
+    //     const response = await fetch(url, {
+    //         headers: {
+    //             'Authorization': `Bearer ${token}`,
+    //         },
+    //     });
+    
+    //     return await response.json();
+    // },
+
+    // addNotes: async (noteData, params = {}) => {
+    //     const token = localStorage.getItem('token');
+    //     const queryParams = new URLSearchParams(params).toString();
+    //     const url = `${API_BASE_URL}/health/notes${queryParams ? `?${queryParams}` : ''}`;
+    
+    //     const response = await fetch(url, {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'Authorization': `Bearer ${token}`,
+    //         },
+    //         body: JSON.stringify(noteData),
+    //     });
+    
+    //     return await response.json();
+    // },
+    
+    
 };

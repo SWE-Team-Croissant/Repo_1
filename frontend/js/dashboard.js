@@ -188,9 +188,18 @@ async function loadRecentAlerts() {
 async function loadVitalTrend() {
     const vitalType = document.getElementById('trend-vital-type').value;
     const chartCanvas = document.getElementById('vital-trend-chart');
+    const userType = localStorage.getItem('user_type');
+    const isProvider = userType === 'healthcare_provider';
     
     try {
-        const trends = await api.getHealthTrends({ vital_type: vitalType, days: 30 });
+        //const trends = await api.getHealthTrends({ vital_type: vitalType, days: 30 });
+        let trends;
+        if (isProvider){
+            const patientID = localStorage.getItem('selected_patient_id');
+            trends = await api.getHealthTrends({ vital_type: vitalType, days: 30,patient_id:patientID });
+        }else{
+            trends = await api.getHealthTrends({ vital_type: vitalType, days: 30 });
+        }
         
         if (!trends.vitals || trends.vitals.length < 2) {
             // Not enough data points
