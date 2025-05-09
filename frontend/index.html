@@ -259,7 +259,14 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="vital-value">Value</label>
-                                    <input type="number" id="vital-value" step="0.1" required>
+                                    <div class="vital-value-wrapper">
+                                        <input type="number" id="vital-value" required>
+                                    </div>
+                                    <div class="input-range-hint">
+                                        <span class="min" id="vital-min-value"></span>
+                                        <span class="max" id="vital-max-value"></span>
+                                    </div>
+                                    <span class="hint-text" id="vital-hint"></span>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Save Vital</button>
                             </form>

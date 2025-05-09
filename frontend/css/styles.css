@@ -620,3 +620,71 @@ h1 {
         font-size: 1.2rem;
     }
 }
+
+/* Input validation styles */
+input:invalid {
+    border-color: var(--danger-color);
+    background-color: rgba(255, 0, 110, 0.05);
+}
+
+input:focus:invalid {
+    box-shadow: 0 0 0 2px rgba(255, 0, 110, 0.2);
+}
+
+/* Vital value wrapper and range display */
+.vital-value-wrapper {
+    position: relative;
+}
+
+.input-range-hint {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--gray-600);
+    margin-top: 0.25rem;
+}
+
+.input-range-hint .min {
+    text-align: left;
+}
+
+.input-range-hint .max {
+    text-align: right;
+}
+
+/* Hint text styles */
+.hint-text {
+    font-size: 0.85rem;
+    color: var(--gray-600);
+    margin-top: 0.5rem;
+    display: block;
+    background-color: var(--gray-100);
+    padding: 8px;
+    border-radius: var(--border-radius);
+    border-left: 3px solid var(--primary-color);
+}
+
+.hint-text strong {
+    color: var(--gray-800);
+}
+
+/* Visual feedback for valid values */
+input:valid:not(:placeholder-shown) {
+    border-color: var(--success-color);
+    background-color: rgba(56, 176, 0, 0.05);
+}
+
+input:focus:valid:not(:placeholder-shown) {
+    box-shadow: 0 0 0 2px rgba(56, 176, 0, 0.2);
+}
+
+/* Responsive adjustments for form */
+@media (max-width: 768px) {
+    .input-range-hint {
+        font-size: 0.7rem;
+    }
+    
+    .hint-text {
+        font-size: 0.8rem;
+    }
+}
