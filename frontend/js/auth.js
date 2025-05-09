@@ -9,6 +9,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginBtn = document.getElementById('login-btn');
     const signupBtn = document.getElementById('signup-btn');
     const logoutBtn = document.getElementById('logout-btn');
+    const signupPassword = document.getElementById('signup-password');
+    
+    // Add password helper text
+    const passwordField = document.getElementById('signup-password');
+    const passwordHelperText = document.createElement('span');
+    passwordHelperText.className = 'helper-text';
+    passwordHelperText.textContent = 'Password must be at least 6 characters long';
+    passwordHelperText.style.fontSize = '0.8rem';
+    passwordHelperText.style.color = 'var(--text-muted-color)';
+    passwordHelperText.style.display = 'block';
+    passwordHelperText.style.marginTop = '5px';
+    
+    // Insert helper text after the password field
+    passwordField.parentNode.insertBefore(passwordHelperText, passwordField.nextSibling);
+    
+    // Add input validation for password field
+    passwordField.addEventListener('input', function() {
+        if (this.value.length < 6) {
+            passwordHelperText.style.color = 'var(--danger-color)';
+        } else {
+            passwordHelperText.style.color = 'var(--success-color)';
+        }
+    });
     
     // Check if user is already logged in
     if (localStorage.getItem('token')) {
@@ -95,6 +118,12 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!username || !email || !password) {
             showToast('Please fill in the required fields', 'error');
+            return;
+        }
+        
+        // Add password length validation
+        if (password.length < 6) {
+            showToast('Password must be at least 6 characters long', 'error');
             return;
         }
         
