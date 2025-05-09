@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        // Add password length validation - adding some words to test faisal's commit issue
+        // Add password length validation - adding some words to test faisal's commit issue 2
         if (password.length < 6) {
             showToast('Password must be at least 6 characters long', 'error');
             return;
